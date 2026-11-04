@@ -21,7 +21,7 @@ Two scripts that fix suspend/hibernate problems and improve battery life on the 
 
 ### Hibernate (`hibernate`)
 - Creates/resizes a swapfile (RAM + 2 GiB by default, asks for confirmation), computes `resume=` / `resume_offset=`, updates the bootloader and initramfs.
-- Ubuntu script: ext4 only. Fedora script: ext4, xfs and btrfs.
+- Ubuntu script: ext4 only.
 - **Secure Boot must be off** — with kernel lockdown active, the kernel blocks hibernation. The scripts warn you if it is on.
 
 ### Lid (`lid`)
@@ -38,7 +38,7 @@ Because there is no iGPU, the NVIDIA GPU never powers off, so gains come from th
 ## Usage (Ubuntu)
 
 ```bash
-chmod +x ubuntu_tune.sh            # or tuf-a15-fedora.sh
+chmod +x ubuntu_tune.sh            
 sudo ./ubuntu_tune.sh diagnose     # read-only, changes nothing
 sudo ./ubuntu_tune.sh all          # sleep + hibernate + battery
 sudo reboot
@@ -68,8 +68,8 @@ sudo CHARGE_LIMIT=70 BOOST_ON_BAT=1 ./tuf-a15-tune.sh battery
 | `HIBERNATE_DELAY` | `60min` | Time before suspend-then-hibernate hibernates |
 | `ASSUME_YES` | `0` | `1` = skip confirmation prompts |
 | `BATTERY_MODE` | `tlp` | *(Ubuntu)* `tlp` or `ppd` |
-| `ASPM_BAT` | `powersave` | *(Fedora)* PCIe ASPM policy on battery |
-| `NV_BAT_MAXCLOCK` | `0` | *(Fedora)* Max GPU clock (MHz) on battery, `0` = unlimited |
+| `ASPM_BAT` | `powersave` |
+| `NV_BAT_MAXCLOCK` | `0` |
 
 To remove the charge limit before a trip: `sudo tuf-charge-limit 100`.
 
