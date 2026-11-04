@@ -4,12 +4,11 @@ Two scripts that fix suspend/hibernate problems and improve battery life on the 
 
 | Script | Target |
 |---|---|
-| `tuf-a15-tune.sh` | Ubuntu 26.10 (GNOME) |
-| `tuf-a15-fedora.sh` | Fedora 44 (KDE Plasma) |
+| `ubuntu_tune.sh` | Ubuntu 26.10 (GNOME) |
 
 **Target hardware:** Ryzen 7 7435HS · RTX 2050 4 GB · **no iGPU** (the NVIDIA GPU is the only GPU and drives the display).
 
-> ⚠️ **Experimental.** These scripts modify kernel parameters, the initramfs, swap, systemd units and `/etc/fstab`. They have **not** been validated on real hardware by the author of this README beyond syntax checks. Run `diagnose` first, read the script, and make sure you have a way to recover (live USB) before using `hibernate` or `all`. Use at your own risk.
+> ⚠️ **Experimental.** These scripts modify kernel parameters, the initramfs, swap, systemd units and `/etc/fstab`. They have **not** been validated on other hardware than ASUS TUF Gaming A15 (FA506NFR). Run `diagnose` first, read the script, and make sure you have a way to recover (live USB) before using `hibernate` or `all`. **Use at your own risk**.
 
 ## What it does
 
@@ -27,7 +26,6 @@ Two scripts that fix suspend/hibernate problems and improve battery life on the 
 
 ### Lid (`lid`)
 - Lid close on battery → suspend, then hibernate after `HIBERNATE_DELAY` (default 60 min). Only run this **after** you confirmed `systemctl hibernate` works.
-- On KDE the lid action is also controlled by PowerDevil (System Settings → Power Management).
 
 ### Battery (`battery`)
 Because there is no iGPU, the NVIDIA GPU never powers off, so gains come from the CPU, PCIe, Wi-Fi, audio and the charge limit:
@@ -36,17 +34,16 @@ Because there is no iGPU, the NVIDIA GPU never powers off, so gains come from th
 - Wi-Fi and audio power saving.
 - Charge limit (default 80%) via `charge_control_end_threshold`, if the kernel exposes it.
 - **Ubuntu:** installs and configures TLP (masks `power-profiles-daemon`; use `BATTERY_MODE=ppd` to keep it).
-- **Fedora:** keeps the native `power-profiles-daemon` / `tuned-ppd` so the KDE power widget keeps working; AC/battery switching is done with a udev rule.
 
-## Usage
+## Usage (Ubuntu)
 
 ```bash
-chmod +x tuf-a15-tune.sh            # or tuf-a15-fedora.sh
-sudo ./tuf-a15-tune.sh diagnose     # read-only, changes nothing
-sudo ./tuf-a15-tune.sh all          # sleep + hibernate + battery
+chmod +x ubuntu_tune.sh            # or tuf-a15-fedora.sh
+sudo ./ubuntu_tune.sh diagnose     # read-only, changes nothing
+sudo ./ubuntu_tune.sh all          # sleep + hibernate + battery
 sudo reboot
 systemctl hibernate                 # test that it resumes correctly
-sudo ./tuf-a15-tune.sh lid          # only if hibernate worked
+sudo ./ubuntu_tune.sh lid          # only if hibernate worked
 ```
 
 On Ubuntu, after the first reboot run `sudo ./tuf-a15-tune.sh battery` again so the CPU settings are tuned for the new `amd-pstate` driver.
@@ -87,13 +84,9 @@ Original versions of every file the script touches are saved under `/var/backups
 ## Troubleshooting
 
 - Update the BIOS first — an outdated BIOS is a common cause of sleep issues: `fwupdmgr refresh && fwupdmgr get-updates`.
-- If suspend/hibernate still fails, run `sudo ./tuf-a15-tune.sh diagnose` **right after a failure** and attach the output to an issue.
+- If suspend/hibernate still fails, run `sudo ./ubuntu_tune.sh diagnose` **right after a failure** and attach the output to an issue.
 - Hibernate does nothing / system doesn't resume: check that Secure Boot is disabled and that `resume=` and `resume_offset=` appear in `/proc/cmdline`.
 
 ## Not for other models
 
 These scripts assume this exact hardware. On laptops with an iGPU (hybrid graphics) the `battery` step does not apply as-is, and the Wi-Fi/wakeup tweaks may be unnecessary or wrong.
-
-## License
-
-Add a `LICENSE` file (MIT is a common choice for scripts like these).
