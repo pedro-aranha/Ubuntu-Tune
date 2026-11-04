@@ -1,6 +1,7 @@
 # ASUS TUF Gaming A15 — Linux suspend/hibernate & battery tuning
+**Use at your own risk**
 
-Two scripts that fix suspend/hibernate problems and improve battery life on the **ASUS TUF Gaming A15 (FA506NFR)**:
+Script that fix suspend/hibernate problems and improve battery life on the **ASUS TUF Gaming A15 (FA506NFR)**:
 
 | Script | Target |
 |---|---|
